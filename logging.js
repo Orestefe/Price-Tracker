@@ -32,10 +32,9 @@ function logBold(text) {
     console.log(colors.bright + text + colors.reset);
 }
 
-function logPrice(name, price) {
+function logPrice(name, price, text) {
     const timestamp = new Date().toLocaleString();
-    console.log(timestamp)
-    console.log(`${colorText('[PRICE]', 'cyan')} ${name}: $${price} @ ${timestamp}`);
+    console.log(`${colorText(`@${timestamp} [PRICE]`, 'cyan')} ${name}: $${price} ${text}`);
 }
 
 module.exports = {
