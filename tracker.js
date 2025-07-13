@@ -8,140 +8,197 @@ const {
     logWarning,
     logError,
     logBold,
+    logPrice,
     startSpinner,
     stopSpinner,
 } = require('./logging');
 
 const WATCHLIST_PATH = './watchlist.json';
 const HISTORY_PATH = './price-history.json';
-const LOG_PATH = './price-log.csv';
-const MAX_CONCURRENT_TABS = 5;
 
-function logPrice(name, price) {
-    const timestamp = new Date().toISOString();
-    const header = 'timestamp,name,price\n';
-    const line = `${timestamp},"${name}",${price}\n`;
+let watchlist = JSON.parse(fs.readFileSync(WATCHLIST_PATH, 'utf-8'));
+let history = fs.existsSync(HISTORY_PATH)
+    ? JSON.parse(fs.readFileSync(HISTORY_PATH, 'utf-8'))
+    : {};
 
-    if (!fs.existsSync(LOG_PATH)) {
-        fs.writeFileSync(LOG_PATH, header);
-    }
+const MAX_CONCURRENT_TABS = 3;
 
-    fs.appendFileSync(LOG_PATH, line);
+async function pickSelector(page) {
+    const selector = await page.evaluate(() => {
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.pointerEvents = 'none';
+            overlay.style.border = '2px solid red';
+            overlay.style.zIndex = 9999999;
+            document.body.appendChild(overlay);
+
+            let lastElem = null;
+
+            function updateOverlay(el) {
+                if (!el) {
+                    overlay.style.width = '0px';
+                    overlay.style.height = '0px';
+                    return;
+                }
+                const rect = el.getBoundingClientRect();
+                overlay.style.top = rect.top + 'px';
+                overlay.style.left = rect.left + 'px';
+                overlay.style.width = rect.width + 'px';
+                overlay.style.height = rect.height + 'px';
+            }
+
+            function getUniqueSelector(el) {
+                if (el.id) return `#${el.id}`;
+                if (el === document.body) return 'body';
+
+                let path = [];
+                while (el && el.nodeType === 1 && el !== document.body) {
+                    let selector = el.nodeName.toLowerCase();
+                    if (el.className) {
+                        const classes = el.className.trim().split(/\s+/).join('.');
+                        selector += `.${classes}`;
+                    }
+
+                    const siblings = Array.from(el.parentNode.children).filter(sib => sib.nodeName === el.nodeName);
+                    if (siblings.length > 1) {
+                        const index = siblings.indexOf(el) + 1;
+                        selector += `:nth-of-type(${index})`;
+                    }
+
+                    path.unshift(selector);
+                    el = el.parentNode;
+                }
+                return path.join(' > ');
+            }
+
+            function onMouseMove(e) {
+                if (lastElem !== e.target) {
+                    lastElem = e.target;
+                    updateOverlay(lastElem);
+                }
+            }
+
+            function onClick(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const selector = getUniqueSelector(e.target);
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('click', onClick);
+                overlay.remove();
+
+                resolve(selector);
+            }
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('click', onClick);
+
+            alert('Click the price element you want to track.');
+        });
+    });
+    return selector;
 }
 
-(async () => {
-    // Load config
-    if (!fs.existsSync(WATCHLIST_PATH)) {
-        logError(`Watchlist file not found: ${WATCHLIST_PATH}`);
-        process.exit(1);
-    }
+async function ensureSelectors(browser) {
+    let updated = false;
 
-    const watchlist = JSON.parse(fs.readFileSync(WATCHLIST_PATH));
-    const history = fs.existsSync(HISTORY_PATH)
-        ? JSON.parse(fs.readFileSync(HISTORY_PATH))
-        : {};
+    for (const item of watchlist) {
+        if (!item.priceSelector) {
+            logWarning(`No selector found for "${item.name}". Opening page for selection...`);
 
-    const browser = await puppeteer.launch({ headless: false });
+            const page = await browser.newPage();
 
-    async function checkPrice(item) {
-        const page = await browser.newPage();
+            await page.goto(item.url, { waitUntil: 'networkidle2' });
 
-        try {
-            stopSpinner();
-            logInfo(`Checking: ${colorText(item.name, 'cyan')}`);
-
-            await page.goto(item.url, { waitUntil: 'networkidle0' });
-            await page.waitForSelector(item.selector, { timeout: 15000 });
-            await new Promise(r => setTimeout(r, 5000));
-
-            const text = await page.$eval(item.selector, el => el.innerText);
-            const priceMatch = text.match(/\$\d{1,3}(,\d{3})*(\.\d{2})?/);
-
-            if (!priceMatch) {
-                throw new Error('Price pattern not found');
-            }
-
-            const price = parseFloat(priceMatch[0].replace(/[^\d.]/g, ''));
-
-            logPrice(item.name, price);
-
-            const prevPrice = history[item.name];
-            const shouldNotify =
-                price < item.maxPrice && (prevPrice === undefined || price < prevPrice);
-
-            if (shouldNotify) {
-                const msg = `${item.name} price dropped to $${price} (was ${prevPrice ?? 'unknown'})`;
-                notifyDesktop('Price Drop Alert!', msg);
-                await notifyEmail('Price Drop Alert!', msg);
-                history[item.name] = price;
-                logSuccess(`${item.name}: $${price} (Notified)`);
+            const selector = await pickSelector(page);
+            if (selector) {
+                item.priceSelector = selector;
+                updated = true;
+                logSuccess(`Selector for "${item.name}" saved: ${selector}`);
             } else {
-                if (prevPrice === undefined) history[item.name] = price;
-                logWarning(`${item.name}: $${price} (No change)`);
+                logError(`Selector for "${item.name}" not selected. Skipping.`);
             }
 
             await page.close();
-            startSpinner('Checking prices \n');
-            return { item: item.name, price, notified: shouldNotify };
-        } catch (err) {
-            await page.close();
-            stopSpinner();
-            logError(`[${item.name}] Error: ${err.message}`);
-            startSpinner('Checking prices \n');
-            return null;
         }
     }
 
-    // Process in batches
-    startSpinner('Starting price checks \n');
-    const results = [];
-    const errors = [];
+    if (updated) {
+        fs.writeFileSync(WATCHLIST_PATH, JSON.stringify(watchlist, null, 2));
+        logSuccess(`Updated ${WATCHLIST_PATH} with new selectors.`);
+    }
+}
 
+async function checkPrice(item, browser) {
+    const page = await browser.newPage();
+
+    try {
+        stopSpinner();
+        logInfo(`Checking: ${colorText(item.name, 'cyan')}`);
+        await page.goto(item.url, { timeout: 5000, waitUntil: 'domcontentloaded' });
+        await page.waitForSelector(item.priceSelector, { timeout: 15000 });
+        await new Promise(r => setTimeout(r, 5000));
+
+        const text = await page.$eval(item.priceSelector, el => el.innerText);
+        logInfo(`Text: ${text}`);
+        const priceMatch = text.match(/\$\d{1,3}(,\d{3})*(\.\d{2})?/);
+        logInfo(`priceMatch: ${priceMatch}`);
+
+        if (!priceMatch) throw new Error('Price pattern not found');
+
+        const price = parseFloat(priceMatch[0].replace(/[^\d.]/g, ''));
+        logPrice(item.name, price);
+
+        const prevPrice = history[item.name];
+        const shouldNotify = price < item.maxPrice && (prevPrice === undefined || price < prevPrice);
+
+        if (shouldNotify) {
+            const msg = `${item.name} price dropped to $${price} (was ${prevPrice ?? 'unknown'})`;
+            notifyDesktop('Price Drop Alert!', msg);
+            await notifyEmail('Price Drop Alert!', msg);
+            history[item.name] = price;
+            logSuccess(`${item.name}: $${price} (Notified)`);
+        } else {
+            if (prevPrice === undefined) history[item.name] = price;
+            logWarning(`${item.name}: $${price} (No change)`);
+        }
+
+        await page.close();
+        startSpinner('Checking prices \n');
+        return { item: item.name, price, notified: shouldNotify };
+    } catch (err) {
+        await page.close();
+        stopSpinner();
+        logError(`[${item.name}] Error: ${err.message}`);
+        return null;
+    }
+}
+
+(async () => {
+    const browser = await puppeteer.launch({ headless: false, defaultViewport: null });
+    await ensureSelectors(browser);
+
+    const results = [];
     for (let i = 0; i < watchlist.length; i += MAX_CONCURRENT_TABS) {
         const batch = watchlist.slice(i, i + MAX_CONCURRENT_TABS);
-
         stopSpinner();
         logInfo(
             `Checking batch ${i / MAX_CONCURRENT_TABS + 1} of ${Math.ceil(
                 watchlist.length / MAX_CONCURRENT_TABS
             )}`
         );
-        startSpinner('Checking prices ');
-
-        const batchResults = await Promise.all(batch.map(checkPrice));
-        batchResults.forEach(result => {
-            if (result) {
-                results.push(result);
-            } else {
-                // If checkPrice returned null, item failed
-                const failedItem = batch[batchResults.indexOf(result)];
-                errors.push(failedItem?.name || 'Unknown');
-            }
-        });
-    }
-    stopSpinner();
-
-    if (results.length === 0) {
-        logError('All price checks failed.');
-        await browser.close();
-        process.exit(1);
-    }
-
-    logSuccess(`Price checks completed. ${results.length} succeeded, ${errors.length} failed.`);
-
-    if (errors.length > 0) {
-        logWarning('The following items failed:');
-        errors.forEach(name => console.log(` - ${colorText(name, 'red')}`));
+        startSpinner('Checking prices \n');
+        const batchResults = await Promise.all(batch.map(item => checkPrice(item, browser)));
+        results.push(...batchResults.filter(Boolean));
     }
 
     fs.writeFileSync(HISTORY_PATH, JSON.stringify(history, null, 2));
     await browser.close();
 
-    logBold('\n--- Summary ---');
+    logBold('\n--- Summary ---')
     results.forEach(r => {
-        const status = r.notified
-            ? colorText('Notified', 'green')
-            : colorText('No change', 'yellow');
-        console.log(`${colorText(r.item, 'cyan')}: $${r.price} (${status})`);
+        logInfo(`${r.item}: $${r.price}`)
     });
+    stopSpinner();
 })();

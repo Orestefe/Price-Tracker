@@ -1,14 +1,14 @@
 [
-	{
-		"name": "Bitcoin Price Test",
-		"url": "https://coinmarketcap.com/currencies/bitcoin/",
-		"selector": "[data-test='text-cdp-price-display']",
-		"maxPrice": 118000
-	},
-	{
-		"name": "El Misti - 4 Bed Dorm",
-		"url": "https://www.hostelworld.com/pwa/hosteldetails.php/El-Misti-Hostel-Ipanema/Rio-de-Janeiro/264798?from=2025-12-28&to=2026-01-04&guests=1",
-		"targetText": "Standard 4 Bed Mixed Dorm Ensuite",
-		"maxPrice": 256.37
-	}
+  {
+    "name": "Bitcoin Price Test",
+    "url": "https://coinmarketcap.com/currencies/bitcoin/",
+    "maxPrice": 118000,
+    "priceSelector": "div:nth-of-type(1) > div.sc-c304a813-1.etSVIy.global-layout-v2:nth-of-type(2) > div.main-content > div.cmc-body-wrapper:nth-of-type(2) > div.grid > div.sc-4c05d6ef-0.sc-31460534-0.sc-31460534-1.dlQYLv.dgLcgj.hdTvmG > div.sc-4c05d6ef-0.sc-80a15b9b-0.dlQYLv.kxkmTZ.coin-stats:nth-of-type(1) > div.sc-4c05d6ef-0.sc-80a15b9b-1.dlQYLv.coin-stats-scroll-wrapper > section > div.sc-65e7f566-0.izkyff.coin-stats-header > div.sc-65e7f566-0.kDXQSp.flexStart.alignBaseline:nth-of-type(2) > span.sc-65e7f566-0.esyGGG.base-text"
+  },
+  {
+    "name": "El Misti - 4 Bed Dorm",
+    "url": "https://www.hostelworld.com/pwa/hosteldetails.php/El-Misti-Hostel-Ipanema/Rio-de-Janeiro/264798?from=2025-12-28&to=2026-01-04&guests=1",
+    "maxPrice": 256.37,
+    "priceSelector": "#rate-172834-price"
+  }
 ]

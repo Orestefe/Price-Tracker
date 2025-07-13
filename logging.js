@@ -48,8 +48,14 @@ function stopSpinner() {
     if (spinnerInterval) {
         clearInterval(spinnerInterval);
         spinnerInterval = null;
-        process.stdout.write('\b'); // clear spinner char
+        process.stdout.write('\b \b'); // Move back, overwrite with space, move back again
     }
+}
+
+function logPrice(name, price) {
+    const timestamp = new Date().toLocaleString();
+    console.log(timestamp)
+    console.log(`${colorText('[PRICE]', 'cyan')} ${name}: $${price} @ ${timestamp}`);
 }
 
 module.exports = {
@@ -58,6 +64,7 @@ module.exports = {
     logSuccess,
     logWarning,
     logError,
+    logPrice,
     logBold,
     startSpinner,
     stopSpinner,
