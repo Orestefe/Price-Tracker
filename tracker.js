@@ -9,8 +9,6 @@ const {
     logError,
     logBold,
     logPrice,
-    startSpinner,
-    stopSpinner,
 } = require('./logging');
 
 const { ensureSelectors } = require('./selectors');
@@ -29,7 +27,6 @@ async function checkPrice(item, browser) {
     const page = await browser.newPage();
 
     try {
-        stopSpinner();
         logInfo(`Checking: ${colorText(item.name, 'cyan')}`);
         await page.goto(item.url, { timeout: 60000, waitUntil: 'domcontentloaded' });
         await page.waitForSelector(item.priceSelector, { timeout: 15000 });
@@ -53,16 +50,27 @@ async function checkPrice(item, browser) {
             history[item.name] = price;
             logSuccess(`${item.name}: $${price} (Notified)`);
         } else {
-            if (prevPrice === undefined) history[item.name] = price;
-            logWarning(`${item.name}: $${price} (No change)`);
+            if (prevPrice === undefined) {
+                history[item.name] = price;
+                logInfo(`${item.name}: $${price} (First time seen)`);
+            } else {
+                history[item.name] = price;
+
+                if (price > prevPrice) {
+                    logWarning(`${item.name}: $${price} (Increased from $${prevPrice})`);
+                } else if (price === prevPrice) {
+                    logInfo(`${item.name}: $${price} (No change)`);
+                } else {
+                    logInfo(`${item.name}: $${price} (Dropped, but not below threshold $${item.maxPrice})`);
+                }
+            }
         }
 
         await page.close();
-        startSpinner('Checking prices \n');
+        logInfo('Checking prices \n')
         return { item: item.name, price, notified: shouldNotify };
     } catch (err) {
         await page.close();
-        stopSpinner();
         logError(`[${item.name}] Error: ${err.message}`);
         return null;
     }
@@ -75,13 +83,12 @@ async function checkPrice(item, browser) {
     const results = [];
     for (let i = 0; i < watchlist.length; i += MAX_CONCURRENT_TABS) {
         const batch = watchlist.slice(i, i + MAX_CONCURRENT_TABS);
-        stopSpinner();
         logInfo(
             `Checking batch ${i / MAX_CONCURRENT_TABS + 1} of ${Math.ceil(
                 watchlist.length / MAX_CONCURRENT_TABS
             )}`
         );
-        startSpinner('Checking prices \n');
+        logInfo('Checking prices \n')
         const batchResults = await Promise.all(batch.map(item => checkPrice(item, browser)));
         results.push(...batchResults.filter(Boolean));
     }
@@ -93,5 +100,5 @@ async function checkPrice(item, browser) {
     results.forEach(r => {
         logInfo(`${r.item}: $${r.price}`);
     });
-    stopSpinner();
+    logSuccess('End of script');
 })();

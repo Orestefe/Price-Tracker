@@ -1,7 +1,3 @@
-const spinnerFrames = ['-', '\\', '|', '/'];
-let spinnerIndex = 0;
-let spinnerInterval;
-
 const colors = {
     reset: '\x1b[0m',
     bright: '\x1b[1m',
@@ -36,22 +32,6 @@ function logBold(text) {
     console.log(colors.bright + text + colors.reset);
 }
 
-function startSpinner(text) {
-    process.stdout.write(text);
-    spinnerInterval = setInterval(() => {
-        process.stdout.write('\b' + spinnerFrames[spinnerIndex]);
-        spinnerIndex = (spinnerIndex + 1) % spinnerFrames.length;
-    }, 100);
-}
-
-function stopSpinner() {
-    if (spinnerInterval) {
-        clearInterval(spinnerInterval);
-        spinnerInterval = null;
-        process.stdout.write('\b \b'); // Move back, overwrite with space, move back again
-    }
-}
-
 function logPrice(name, price) {
     const timestamp = new Date().toLocaleString();
     console.log(timestamp)
@@ -66,6 +46,4 @@ module.exports = {
     logError,
     logPrice,
     logBold,
-    startSpinner,
-    stopSpinner,
 };

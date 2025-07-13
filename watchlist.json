@@ -1,14 +1,26 @@
 [
-  {
-    "name": "Bitcoin Price Test",
-    "url": "https://coinmarketcap.com/currencies/bitcoin/",
-    "maxPrice": 118000,
-    "priceSelector": "div:nth-of-type(1) > div.sc-c304a813-1.etSVIy.global-layout-v2:nth-of-type(2) > div.main-content > div.cmc-body-wrapper:nth-of-type(2) > div.grid > div.sc-4c05d6ef-0.sc-31460534-0.sc-31460534-1.dlQYLv.dgLcgj.hdTvmG > div.sc-4c05d6ef-0.sc-80a15b9b-0.dlQYLv.kxkmTZ.coin-stats:nth-of-type(1) > div.sc-4c05d6ef-0.sc-80a15b9b-1.dlQYLv.coin-stats-scroll-wrapper > section > div.sc-65e7f566-0.izkyff.coin-stats-header > div.sc-65e7f566-0.kDXQSp.flexStart.alignBaseline:nth-of-type(2) > span.sc-65e7f566-0.esyGGG.base-text"
-  },
-  {
-    "name": "El Misti - 4 Bed Dorm",
-    "url": "https://www.hostelworld.com/pwa/hosteldetails.php/El-Misti-Hostel-Ipanema/Rio-de-Janeiro/264798?from=2025-12-28&to=2026-01-04&guests=1",
-    "maxPrice": 256.37,
-    "priceSelector": "#rate-172834-price"
-  }
+	{
+		"name": "El Misti - 4 Bed Dorm",
+		"url": "https://www.hostelworld.com/pwa/hosteldetails.php/El-Misti-Hostel-Ipanema/Rio-de-Janeiro/264798?from=2025-12-28&to=2026-01-04&guests=1",
+		"maxPrice": 256.37,
+		"priceSelector": "#rate-172834-price"
+	},
+	{
+		"name": "The Urban Jungle Rooftop Hostel - Superior 6 Bed Mixed Dorm Ensuite",
+		"url": "https://www.hostelworld.com/pwa/hosteldetails.php/The-Urban-Jungle-Rooftop-Hostel/Malaga/283193?from=2025-07-31&to=2025-08-04&guests=1",
+		"maxPrice": 57.27,
+		"priceSelector": "div:nth-of-type(3) > div > div.big-bang > div.property:nth-of-type(2) > div.inner-wrapper:nth-of-type(8) > div.left-column:nth-of-type(1) > div:nth-of-type(3) > div > section > div.availability-container > div.availability-wrapper > div:nth-of-type(3) > div.availability-table > div.table-container:nth-of-type(2) > div.room-container:nth-of-type(4) > div.rate-list:nth-of-type(2) > div.rate.rate-container > div.body-2-reg.rate-price-container:nth-of-type(1) > div.rate-price-line:nth-of-type(1)"
+	},
+	{
+		"name": "Rethymno Youth Hostel - Basic 8 Bed Mixed Dorm",
+		"url": "https://www.hostelworld.com/pwa/hosteldetails.php/Rethymno-Youth-Hostel/Crete/10916?from=2025-09-04&to=2025-09-09&guests=1",
+		"maxPrice": 24.28,
+		"priceSelector": "div:nth-of-type(3) > div > div.big-bang > div.property:nth-of-type(2) > div.inner-wrapper:nth-of-type(8) > div.left-column:nth-of-type(1) > div:nth-of-type(3) > div > section > div.availability-container > div.availability-wrapper > div:nth-of-type(3) > div.availability-table > div.table-container:nth-of-type(2) > div.room-container:nth-of-type(2) > div.rate-list:nth-of-type(2) > div.rate.rate-container > div.body-2-reg.rate-price-container:nth-of-type(1) > div.rate-price-line:nth-of-type(1)"
+	},
+	{
+		"name": "Nomads MultiCultural - Standard 4 Bed Mixed Dorm - 1 Bed",
+		"url": "https://www.hostelworld.com/pwa/hosteldetails.php/Nomads-MultiCultural/Salvador/310074?from=2025-12-17&to=2025-12-22&guests=1",
+		"maxPrice": 21.28,
+		"priceSelector": "div:nth-of-type(3) > div > div.big-bang > div.property:nth-of-type(2) > div.inner-wrapper:nth-of-type(8) > div.left-column:nth-of-type(1) > div:nth-of-type(3) > div > section > div.availability-container > div.availability-wrapper > div:nth-of-type(3) > div.availability-table:nth-of-type(2) > div.table-container:nth-of-type(2) > div.room-container:nth-of-type(3) > div.rate-list:nth-of-type(2) > div.rate.rate-container > div.body-2-reg.rate-price-container:nth-of-type(1) > div.rate-price-line:nth-of-type(1)"
+	}
 ]
