@@ -1,7 +1,16 @@
 const fs = require('fs');
-const path = require('path');
 const puppeteer = require('puppeteer');
 const { notifyDesktop, notifyEmail } = require('./notify');
+const {
+    colorText,
+    logInfo,
+    logSuccess,
+    logWarning,
+    logError,
+    logBold,
+    startSpinner,
+    stopSpinner,
+} = require('./logging');
 
 const WATCHLIST_PATH = './watchlist.json';
 const HISTORY_PATH = './price-history.json';
@@ -21,6 +30,12 @@ function logPrice(name, price) {
 }
 
 (async () => {
+    // Load config
+    if (!fs.existsSync(WATCHLIST_PATH)) {
+        logError(`Watchlist file not found: ${WATCHLIST_PATH}`);
+        process.exit(1);
+    }
+
     const watchlist = JSON.parse(fs.readFileSync(WATCHLIST_PATH));
     const history = fs.existsSync(HISTORY_PATH)
         ? JSON.parse(fs.readFileSync(HISTORY_PATH))
@@ -32,9 +47,12 @@ function logPrice(name, price) {
         const page = await browser.newPage();
 
         try {
+            stopSpinner();
+            logInfo(`Checking: ${colorText(item.name, 'cyan')}`);
+
             await page.goto(item.url, { waitUntil: 'networkidle0' });
             await page.waitForSelector(item.selector, { timeout: 15000 });
-            await new Promise(r => setTimeout(r, 2000));
+            await new Promise(r => setTimeout(r, 5000));
 
             const text = await page.$eval(item.selector, el => el.innerText);
             const priceMatch = text.match(/\$\d{1,3}(,\d{3})*(\.\d{2})?/);
@@ -44,8 +62,6 @@ function logPrice(name, price) {
             }
 
             const price = parseFloat(priceMatch[0].replace(/[^\d.]/g, ''));
-
-            console.log(`[${item.name}] Price found: $${price}`);
 
             logPrice(item.name, price);
 
@@ -58,37 +74,74 @@ function logPrice(name, price) {
                 notifyDesktop('Price Drop Alert!', msg);
                 await notifyEmail('Price Drop Alert!', msg);
                 history[item.name] = price;
+                logSuccess(`${item.name}: $${price} (Notified)`);
             } else {
-                // Update history to current price even if no notification (optional)
                 if (prevPrice === undefined) history[item.name] = price;
+                logWarning(`${item.name}: $${price} (No change)`);
             }
 
             await page.close();
-
+            startSpinner('Checking prices \n');
             return { item: item.name, price, notified: shouldNotify };
         } catch (err) {
-            console.error(`[${item.name}] Error: ${err.message}`);
             await page.close();
+            stopSpinner();
+            logError(`[${item.name}] Error: ${err.message}`);
+            startSpinner('Checking prices \n');
             return null;
         }
     }
 
-    // Process watchlist in batches
+    // Process in batches
+    startSpinner('Starting price checks \n');
     const results = [];
+    const errors = [];
+
     for (let i = 0; i < watchlist.length; i += MAX_CONCURRENT_TABS) {
         const batch = watchlist.slice(i, i + MAX_CONCURRENT_TABS);
+
+        stopSpinner();
+        logInfo(
+            `Checking batch ${i / MAX_CONCURRENT_TABS + 1} of ${Math.ceil(
+                watchlist.length / MAX_CONCURRENT_TABS
+            )}`
+        );
+        startSpinner('Checking prices ');
+
         const batchResults = await Promise.all(batch.map(checkPrice));
-        results.push(...batchResults.filter(Boolean));
+        batchResults.forEach(result => {
+            if (result) {
+                results.push(result);
+            } else {
+                // If checkPrice returned null, item failed
+                const failedItem = batch[batchResults.indexOf(result)];
+                errors.push(failedItem?.name || 'Unknown');
+            }
+        });
+    }
+    stopSpinner();
+
+    if (results.length === 0) {
+        logError('All price checks failed.');
+        await browser.close();
+        process.exit(1);
+    }
+
+    logSuccess(`Price checks completed. ${results.length} succeeded, ${errors.length} failed.`);
+
+    if (errors.length > 0) {
+        logWarning('The following items failed:');
+        errors.forEach(name => console.log(` - ${colorText(name, 'red')}`));
     }
 
     fs.writeFileSync(HISTORY_PATH, JSON.stringify(history, null, 2));
     await browser.close();
 
-    // Summary log
-    console.log('--- Price check complete ---');
-    results.forEach(r =>
-        console.log(
-            `${r.item}: $${r.price} ${r.notified ? '(Notified)' : '(No change)'}`
-        )
-    );
+    logBold('\n--- Summary ---');
+    results.forEach(r => {
+        const status = r.notified
+            ? colorText('Notified', 'green')
+            : colorText('No change', 'yellow');
+        console.log(`${colorText(r.item, 'cyan')}: $${r.price} (${status})`);
+    });
 })();
