@@ -1,8 +1,14 @@
 [
-  {
-    "name": "Bitcoin Price Test",
-    "url": "https://coinmarketcap.com/currencies/bitcoin/",
-    "selector": "[data-test='text-cdp-price-display']",
-    "maxPrice": 118000
-  }
+	{
+		"name": "Bitcoin Price Test",
+		"url": "https://coinmarketcap.com/currencies/bitcoin/",
+		"selector": "[data-test='text-cdp-price-display']",
+		"maxPrice": 118000
+	},
+	{
+		"name": "El Misti - 4 Bed Dorm",
+		"url": "https://www.hostelworld.com/pwa/hosteldetails.php/El-Misti-Hostel-Ipanema/Rio-de-Janeiro/264798?from=2025-12-28&to=2026-01-04&guests=1",
+		"targetText": "Standard 4 Bed Mixed Dorm Ensuite",
+		"maxPrice": 256.37
+	}
 ]
