@@ -1,0 +1,8 @@
+[
+  {
+    "name": "Bitcoin Price Test",
+    "url": "https://coinmarketcap.com/currencies/bitcoin/",
+    "selector": "[data-test='text-cdp-price-display']",
+    "maxPrice": 118000
+  }
+]
