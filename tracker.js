@@ -36,17 +36,17 @@ function compareAndLogPrice(item, price) {
     history[item.name] = price;
 
     if (price < item.maxPrice && (prevPrice === undefined || price < prevPrice)) {
-        const msg = `${item.name} price dropped to $${price} (was ${prevPrice ?? 'unknown'})`;
+        const msg = `${item.name} price dropped to $${price} (was previously ${prevPrice ?? 'unknown'})`;
         notifyDesktop('Price Drop Alert!', msg);
-        notifyEmail('Price Drop Alert!', msg);
-        logSuccess(`${item.name}: $${price} (Notified)`);
+        notifyEmail(`'Price Drop Alert! - ${item.name}`, msg);
+        logSuccess(`${msg} (Notified)`);
         return true;
     }
 
     if (prevPrice === undefined) {
         logPrice(item.name, price, '(First time seen)');
     } else if (price > prevPrice) {
-        logWarning(item.name, price, `(Increased from $${prevPrice})`);
+        logPrice(item.name, price, `(Increased from $${prevPrice})`);
     } else if (price === prevPrice) {
         logPrice(item.name, price, `(No change)`);
     } else {
@@ -77,7 +77,12 @@ async function checkPrice(item, browser) {
 
 // === MAIN ===
 (async () => {
-    const browser = await puppeteer.launch({ headless: false, defaultViewport: null });
+    const allSelectorsPresent = watchlist.every(item => !!item.priceSelector && !!item.priceSelector != "");
+    const browser = await puppeteer.launch({
+        headless: allSelectorsPresent,
+        defaultViewport: null
+    });
+
     await ensureSelectors(browser, watchlist);
 
     const results = [];

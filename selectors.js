@@ -91,10 +91,7 @@ async function ensureSelectors(browser, watchlist) {
             continue;
         }
 
-        logWarning(
-            `No selector found for "${item.name}". Opening page for selection...`
-        );
-
+        logWarning(`No selector found for "${item.name}". Opening page for selection...`);
         const page = await browser.newPage();
 
         try {
