@@ -1,0 +1,106 @@
+{
+  "Nomads MultiCultural - Standard 4 Bed Mixed Dorm - 1 Bed": [
+    {
+      "timestamp": "2025-07-14T22:30:11.406Z",
+      "price": 25.01
+    },
+    {
+      "timestamp": "2025-07-14T23:00:11.477Z",
+      "price": 25.01
+    },
+    {
+      "timestamp": "2025-07-14T23:30:12.570Z",
+      "price": 25.01
+    },
+    {
+      "timestamp": "2025-07-15T00:00:52.435Z",
+      "price": 25.01
+    },
+    {
+      "timestamp": "2025-07-15T00:30:38.436Z",
+      "price": 25.01
+    },
+    {
+      "timestamp": "2025-07-15T01:00:42.024Z",
+      "price": 25.01
+    },
+    {
+      "timestamp": "2025-07-15T01:30:41.163Z",
+      "price": 24.97
+    },
+    {
+      "timestamp": "2025-07-15T02:00:11.292Z",
+      "price": 24.97
+    },
+    {
+      "timestamp": "2025-07-15T02:30:12.198Z",
+      "price": 24.97
+    }
+  ],
+  "The Urban Jungle Rooftop Hostel - Superior 6 Bed Mixed Dorm Ensuite": [
+    {
+      "timestamp": "2025-07-14T22:30:20.093Z",
+      "price": 53.31
+    },
+    {
+      "timestamp": "2025-07-14T23:00:17.234Z",
+      "price": 53.31
+    },
+    {
+      "timestamp": "2025-07-14T23:30:18.429Z",
+      "price": 53.31
+    },
+    {
+      "timestamp": "2025-07-15T02:00:21.119Z",
+      "price": 53.25
+    },
+    {
+      "timestamp": "2025-07-15T02:30:16.577Z",
+      "price": 53.25
+    }
+  ],
+  "El Misti - 4 Bed Dorm": [
+    {
+      "timestamp": "2025-07-14T22:30:20.249Z",
+      "price": 256.02
+    },
+    {
+      "timestamp": "2025-07-14T23:00:17.737Z",
+      "price": 256.02
+    },
+    {
+      "timestamp": "2025-07-14T23:30:19.075Z",
+      "price": 256.02
+    },
+    {
+      "timestamp": "2025-07-15T02:00:21.340Z",
+      "price": 255.59
+    },
+    {
+      "timestamp": "2025-07-15T02:30:17.515Z",
+      "price": 255.59
+    }
+  ],
+  "Rethymno Youth Hostel - Basic 8 Bed Mixed Dorm": [
+    {
+      "timestamp": "2025-07-14T22:30:17.678Z",
+      "price": 24.55
+    },
+    {
+      "timestamp": "2025-07-14T23:00:16.801Z",
+      "price": 24.55
+    },
+    {
+      "timestamp": "2025-07-14T23:30:18.453Z",
+      "price": 24.55
+    },
+    {
+      "timestamp": "2025-07-15T02:00:17.934Z",
+      "price": 24.52
+    },
+    {
+      "timestamp": "2025-07-15T02:30:16.416Z",
+      "price": 24.52
+    }
+  ]
+}

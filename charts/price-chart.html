@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Price History Chart</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; background: #f4f4f4; }
+    canvas { background: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    select { font-size: 1rem; padding: 0.5rem; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>📈 Price History</h1>
+  <label for="datasetSelect">Filter by Item:</label>
+  <select id="datasetSelect">
+    <option value="All">All</option>
+    <option value="Nomads MultiCultural - Standard 4 Bed Mixed Dorm - 1 Bed">Nomads MultiCultural - Standard 4 Bed Mixed Dorm - 1 Bed</option>
+<option value="The Urban Jungle Rooftop Hostel - Superior 6 Bed Mixed Dorm Ensuite">The Urban Jungle Rooftop Hostel - Superior 6 Bed Mixed Dorm Ensuite</option>
+<option value="El Misti - 4 Bed Dorm">El Misti - 4 Bed Dorm</option>
+<option value="Rethymno Youth Hostel - Basic 8 Bed Mixed Dorm">Rethymno Youth Hostel - Basic 8 Bed Mixed Dorm</option>
+  </select>
+
+  <canvas id="chart" width="1200" height="600"></canvas>
+
+  <script>
+    const allDatasets = [
+  {
+    "label": "Nomads MultiCultural - Standard 4 Bed Mixed Dorm - 1 Bed",
+    "data": [
+      {
+        "x": "2025-07-09T22:18:40.299Z",
+        "y": 21.01
+      },
+      {
+        "x": "2025-07-10T22:19:40.299Z",
+        "y": 22.01
+      },
+      {
+        "x": "2025-07-11T22:20:40.299Z",
+        "y": 23.01
+      },
+      {
+        "x": "2025-07-12T22:21:40.299Z",
+        "y": 24.01
+      },
+      {
+        "x": "2025-07-13T22:22:40.299Z",
+        "y": 25.01
+      },
+      {
+        "x": "2025-07-14T22:22:40.299Z",
+        "y": 25.01
+      }
+    ],
+    "borderColor": "rgb(194, 18, 9)",
+    "tension": 0.3
+  },
+  {
+    "label": "The Urban Jungle Rooftop Hostel - Superior 6 Bed Mixed Dorm Ensuite",
+    "data": [
+      {
+        "x": "2025-07-14T22:22:40.830Z",
+        "y": 53.31
+      }
+    ],
+    "borderColor": "rgb(126, 139, 65)",
+    "tension": 0.3
+  },
+  {
+    "label": "El Misti - 4 Bed Dorm",
+    "data": [
+      {
+        "x": "2025-07-14T22:22:40.946Z",
+        "y": 256.02
+      }
+    ],
+    "borderColor": "rgb(111, 120, 22)",
+    "tension": 0.3
+  },
+  {
+    "label": "Rethymno Youth Hostel - Basic 8 Bed Mixed Dorm",
+    "data": [
+      {
+        "x": "2025-07-14T22:22:40.798Z",
+        "y": 24.55
+      }
+    ],
+    "borderColor": "rgb(16, 38, 78)",
+    "tension": 0.3
+  }
+];
+    const ctx = document.getElementById('chart').getContext('2d');
+
+    let chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        datasets: allDatasets
+      },
+      options: {
+        parsing: {
+          xAxisKey: 'x',
+          yAxisKey: 'y'
+        },
+        scales: {
+          x: {
+            type: 'time',
+            time: {
+              tooltipFormat: 'PPpp',
+              displayFormats: {
+                hour: 'MMM d, h a',
+                day: 'MMM d'
+              }
+            },
+            title: {
+              display: true,
+              text: 'Time'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Price ($)'
+            }
+          }
+        },
+        plugins: {
+          legend: { position: 'top' },
+          title: {
+            display: true,
+            text: 'Tracked Item Prices Over Time'
+          }
+        }
+      }
+    });
+
+    document.getElementById('datasetSelect').addEventListener('change', (e) => {
+      const selected = e.target.value;
+
+      chart.data.datasets = selected === 'All'
+        ? allDatasets
+        : allDatasets.filter(ds => ds.label === selected);
+
+      chart.update();
+    });
+  </script>
+</body>
+</html>
