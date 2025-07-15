@@ -9,7 +9,6 @@ if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });
 }
 
-fs.writeFileSync(path.join(path.dirname(OUTPUT_PATH), '.nojekyll'), '');
 const history = JSON.parse(fs.readFileSync(HISTORY_PATH, 'utf-8'));
 const datasets = [];
 
