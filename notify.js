@@ -1,9 +1,9 @@
 const notifier = require('node-notifier');
 const nodemailer = require('nodemailer');
+
 let email, password;
 
-
-if (process.env.EMAIL_ADDRESS && process.env.EMAIL_APP_PASSWORD) {
+if (process.env.EMAIL_ADDRESS && process.env.EMAIL_SECRET) {
     email = process.env.EMAIL_ADDRESS;
     password = process.env.EMAIL_SECRET;
 } else {
@@ -30,8 +30,8 @@ async function notifyEmail(subject, message) {
     });
 
     await transporter.sendMail({
-        from: `"Price Tracker" <${secrets.gmail.user}>`,
-        to: secrets.gmail.user,
+        from: `"Price Tracker" <${email}>`,
+        to: email,
         subject,
         text: message
     });
