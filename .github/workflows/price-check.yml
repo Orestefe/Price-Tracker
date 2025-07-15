@@ -25,7 +25,7 @@ jobs:
         run: npm install
 
       - name: 🕵️ Run price tracker
-        run: node tracker.js
+        run: node src/tracker.js
 
       - name: 📸 Upload screenshots on failure
         if: always()
@@ -35,7 +35,7 @@ jobs:
           path: errors/
 
       - name: 📊 Generate HTML chart
-        run: node charts/generate-chart.js
+        run: node src/generate-chart.js
 
       - name: 🔄 Commit updated data/chart
         run: |
