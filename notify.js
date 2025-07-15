@@ -2,9 +2,10 @@ const notifier = require('node-notifier');
 const nodemailer = require('nodemailer');
 let email, password;
 
+
 if (process.env.EMAIL_ADDRESS && process.env.EMAIL_APP_PASSWORD) {
     email = process.env.EMAIL_ADDRESS;
-    password = process.env.EMAIL_APP_PASSWORD;
+    password = process.env.EMAIL_SECRET;
 } else {
     const secrets = require('./secrets.json');
     email = secrets.email;
