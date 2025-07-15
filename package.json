@@ -1,17 +1,19 @@
 {
-  "name": "price-tracker",
-  "version": "1.0.0",
-  "main": "notify.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "Felipe Orestes <orestefe@gmail.com>",
-  "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "node-notifier": "^10.0.1",
-    "nodemailer": "^7.0.5",
-    "puppeteer": "^24.12.1"
-  }
+	"name": "price-tracker",
+	"version": "1.0.0",
+	"main": "notify.js",
+	"scripts": {
+		"track": "node src/tracker.js",
+		"chart": "node src/generate-charts.js",
+		"start": "bash run.sh"
+	},
+	"keywords": [],
+	"author": "Felipe Orestes <orestefe@gmail.com>",
+	"license": "ISC",
+	"description": "",
+	"dependencies": {
+		"node-notifier": "^10.0.1",
+		"nodemailer": "^7.0.5",
+		"puppeteer": "^24.12.1"
+	}
 }

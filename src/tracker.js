@@ -1,25 +1,26 @@
 const fs = require('fs');
 const puppeteer = require('puppeteer');
+const path = require('path');
+
 const { ensureSelectors } = require('./selectors');
 const { notifyDesktop, notifyEmail } = require('./notify');
 const {
     colorText,
     logInfo,
     logSuccess,
-    logWarning,
     logError,
     logBold,
     logPrice
 } = require('./logging');
 
 // === CONFIGURATION ===
-const WATCHLIST_PATH = './watchlist.json';
-const HISTORY_PATH = './charts/price-history.json';
+const WATCHLIST_PATH = path.resolve(__dirname, '../data/watchlist.json');
+const HISTORY_PATH = path.resolve(__dirname, '../data/price-history.json');
 const MAX_CONCURRENT_TABS = 5;
 const DELAY_AFTER_LOAD_MS = 5000;
 
 // === LOAD FILES ===
-let watchlist = JSON.parse(fs.readFileSync(WATCHLIST_PATH, 'utf-8'));
+const watchlist = JSON.parse(fs.readFileSync(WATCHLIST_PATH, 'utf-8'));
 let history = fs.existsSync(HISTORY_PATH)
     ? JSON.parse(fs.readFileSync(HISTORY_PATH, 'utf-8'))
     : {};

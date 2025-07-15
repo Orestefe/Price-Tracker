@@ -1,7 +1,9 @@
 const fs = require("fs");
-const { logInfo, logWarning, logSuccess, logError } = require("./logging");
+const path = require('path');
 
-const WATCHLIST_PATH = "./watchlist.json";
+const { logSuccess, logError } = require("./logging");
+
+const WATCHLIST_PATH = path.resolve(__dirname, '../data/watchlist.json');
 
 async function pickSelector(page) {
     const selector = await page.evaluate(() => {

@@ -1,33 +1,32 @@
 const fs = require('fs');
+const path = require('path');
 
-const historyPath = './price-history.json';
-const outputPath = '../docs/price-chart.html';
-
-const raw = fs.readFileSync(historyPath, 'utf-8');
+const OUTPUT_PATH = path.resolve(__dirname, '../output/price-chart.html');
+const HISTORY_PATH = path.resolve(__dirname, '../data/price-history.json');
+const raw = fs.readFileSync(HISTORY_PATH, 'utf-8');
 const history = JSON.parse(raw);
-
 const datasets = [];
 
 function getRandomColor() {
-    const r = () => Math.floor(Math.random() * 200);
-    return `rgb(${r()}, ${r()}, ${r()})`;
+  const r = () => Math.floor(Math.random() * 200);
+  return `rgb(${r()}, ${r()}, ${r()})`;
 }
 
 for (const [name, entries] of Object.entries(history)) {
-    const sorted = entries
-        .filter(e => e.timestamp && typeof e.price === 'number')
-        .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+  const sorted = entries
+    .filter(e => e.timestamp && typeof e.price === 'number')
+    .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-    const data = sorted.map(e => ({ x: e.timestamp, y: e.price }));
+  const data = sorted.map(e => ({ x: e.timestamp, y: e.price }));
 
-    if (data.length > 0) {
-        datasets.push({
-            label: name,
-            data,
-            borderColor: getRandomColor(),
-            tension: 0.3
-        });
-    }
+  if (data.length > 0) {
+    datasets.push({
+      label: name,
+      data,
+      borderColor: getRandomColor(),
+      tension: 0.3
+    });
+  }
 }
 
 const html = `
@@ -123,5 +122,5 @@ const html = `
 </html>
 `;
 
-fs.writeFileSync(outputPath, html);
-console.log(`✅ Chart with dropdown filter generated at ${outputPath}`);
+fs.writeFileSync(OUTPUT_PATH, html);
+console.log(`✅ Chart with dropdown filter generated at ${OUTPUT_PATH}`);

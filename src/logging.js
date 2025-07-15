@@ -20,10 +20,6 @@ function logSuccess(text) {
     console.log(`${colorText('[SUCCESS]', 'green')} ${text}\n`);
 }
 
-function logWarning(text) {
-    console.log(`${colorText('[WARN]', 'yellow')} ${text}\n`);
-}
-
 function logError(text) {
     console.error(`${colorText('[ERROR]', 'red')} ${text}\n`);
 }
@@ -41,7 +37,6 @@ module.exports = {
     colorText,
     logInfo,
     logSuccess,
-    logWarning,
     logError,
     logPrice,
     logBold,
