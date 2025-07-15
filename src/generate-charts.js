@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const OUTPUT_PATH = path.resolve(__dirname, '../output/price-chart.html');
+const OUTPUT_PATH = path.resolve(__dirname, '../docs/price-chart.html');
 const HISTORY_PATH = path.resolve(__dirname, '../data/price-history.json');
 
 const outputDir = path.dirname(OUTPUT_PATH);
