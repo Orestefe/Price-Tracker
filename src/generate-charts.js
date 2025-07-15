@@ -10,7 +10,7 @@ if (!fs.existsSync(outputDir)) {
 }
 
 fs.writeFileSync(path.join(path.dirname(OUTPUT_PATH), '.nojekyll'), '');
-const history = JSON.parse(fs.readFileSync(HISTORY_PATH, 'utf-8'););
+const history = JSON.parse(fs.readFileSync(HISTORY_PATH, 'utf-8'));
 const datasets = [];
 
 function getRandomColor() {
