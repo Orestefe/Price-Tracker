@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 const historyPath = './price-history.json';
-const outputPath = './price-chart.html';
+const outputPath = '../docs/price-chart.html';
 
 const raw = fs.readFileSync(historyPath, 'utf-8');
 const history = JSON.parse(raw);
@@ -32,68 +32,72 @@ for (const [name, entries] of Object.entries(history)) {
 
 const html = `
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Price History Chart</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📈 Price History</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
-  <style>
-    body { font-family: sans-serif; padding: 2rem; background: #f4f4f4; }
-    canvas { background: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    select { font-size: 1rem; padding: 0.5rem; margin-bottom: 1rem; }
-  </style>
 </head>
-<body>
-  <h1>📈 Price History</h1>
-  <label for="datasetSelect">Filter by Item:</label>
-  <select id="datasetSelect">
-    <option value="All">All</option>
-    ${datasets.map(ds => `<option value="${ds.label}">${ds.label}</option>`).join('\n')}
-  </select>
+<body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col items-center p-6">
+  <div class="w-full max-w-5xl bg-white p-6 rounded-2xl shadow-lg">
+    <header class="text-center mb-6">
+      <h1 class="text-4xl font-bold text-blue-600 mb-2">💸 Price Tracker</h1>
+      <p class="text-sm text-gray-500">Visualize price trends of tracked items</p>
+    </header>
 
-  <canvas id="chart" width="1200" height="600"></canvas>
+    <div class="mb-4">
+      <label for="datasetSelect" class="block mb-2 text-sm font-medium">Filter by item</label>
+      <select id="datasetSelect" class="w-full p-2 border border-gray-300 rounded-md">
+        <option value="All">All</option>
+        ${datasets.map(ds => `<option value="${ds.label}">${ds.label}</option>`).join('\n')}
+      </select>
+    </div>
+
+    <canvas id="chart" class="w-full h-[100px]"></canvas>
+    <p class="text-sm text-right text-gray-400 mt-2">Last updated: <span id="lastUpdated"></span></p>
+  </div>
 
   <script>
     const allDatasets = ${JSON.stringify(datasets, null, 2)};
     const ctx = document.getElementById('chart').getContext('2d');
 
-    let chart = new Chart(ctx, {
+    function formatDate(ts) {
+      const d = new Date(ts);
+      return d.toLocaleString("en-US", { timeZone: "America/New_York" });
+    }
+
+    const chart = new Chart(ctx, {
       type: 'line',
       data: {
         datasets: allDatasets
       },
       options: {
-        parsing: {
-          xAxisKey: 'x',
-          yAxisKey: 'y'
+        parsing: { xAxisKey: 'x', yAxisKey: 'y' },
+        responsive: true,
+        plugins: {
+          legend: { position: 'top'},
+          title: {
+            display: true,
+            text: 'Tracked Item Prices Over Time'
+          }
         },
         scales: {
           x: {
             type: 'time',
             time: {
               tooltipFormat: 'PPpp',
-              displayFormats: {
-                hour: 'MMM d, h a',
-                day: 'MMM d'
-              }
+              displayFormats: { hour: 'MMM d, h a', day: 'MMM d' }
             },
-            title: {
-              display: true,
-              text: 'Time'
-            }
+            title: { display: true, text: 'Time' }
           },
           y: {
-            title: {
-              display: true,
-              text: 'Price ($)'
+            title: { display: true, text: 'Price ($)' },
+            ticks: {
+              callback: val => '$' + val
             }
-          }
-        },
-        plugins: {
-          legend: { position: 'top' },
-          title: {
-            display: true,
-            text: 'Tracked Item Prices Over Time'
           }
         }
       }
@@ -101,13 +105,19 @@ const html = `
 
     document.getElementById('datasetSelect').addEventListener('change', (e) => {
       const selected = e.target.value;
-
       chart.data.datasets = selected === 'All'
         ? allDatasets
         : allDatasets.filter(ds => ds.label === selected);
-
       chart.update();
     });
+
+    // Set last updated
+    const latestTimestamp = allDatasets.flatMap(d => d.data).reduce((latest, point) => {
+      return new Date(point.x) > new Date(latest) ? point.x : latest;
+    }, "");
+    if (latestTimestamp) {
+      document.getElementById('lastUpdated').textContent = formatDate(latestTimestamp);
+    }
   </script>
 </body>
 </html>
