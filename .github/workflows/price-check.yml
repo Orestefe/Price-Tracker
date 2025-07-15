@@ -35,7 +35,7 @@ jobs:
           path: errors/
 
       - name: 📊 Generate HTML chart
-        run: node generate-chart.js
+        run: node charts/generate-chart.js
 
       - name: 🔄 Commit updated data/chart
         run: |
