@@ -2,8 +2,8 @@ const fs = require('fs');
 const puppeteer = require('puppeteer');
 const path = require('path');
 
-const { ensureSelectors } = require('./selectors');
-const { notifyDesktop, notifyEmail } = require('./notify');
+const { ensureSelectors } = require('./utils/selectors');
+const { notifyDesktop, notifyEmail } = require('./utils/notify');
 const {
     colorText,
     logInfo,
@@ -11,7 +11,7 @@ const {
     logError,
     logBold,
     logPrice
-} = require('./logging');
+} = require('./utils/logging');
 
 // === CONFIGURATION ===
 const WATCHLIST_PATH = path.resolve(__dirname, '../data/watchlist.json');

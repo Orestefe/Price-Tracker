@@ -7,7 +7,7 @@ if (process.env.EMAIL_ADDRESS && process.env.EMAIL_SECRET) {
     email = process.env.EMAIL_ADDRESS;
     password = process.env.EMAIL_SECRET;
 } else {
-    const secrets = require('../data/secrets.json');
+    const secrets = require('../../data/secrets.json');
     email = secrets.email;
     password = secrets.appPassword;
 }
