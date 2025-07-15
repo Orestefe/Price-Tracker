@@ -76,9 +76,11 @@ async function checkPrice(item, browser) {
         return { item: item.name, price, notified };
     } catch (err) {
         logError(`[${item.name}] Error: ${err.message}`);
+        await page.screenshot({ path: `errors/${item.name.replace(/[^a-z0-9]/gi, '_')}.png` });
     } finally {
         await page.close();
     }
+
 }
 
 // === MAIN ===

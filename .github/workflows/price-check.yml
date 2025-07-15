@@ -27,6 +27,13 @@ jobs:
       - name: 🕵️ Run price tracker
         run: node tracker.js
 
+      - name: 📸 Upload screenshots on failure
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: failure-screenshots
+          path: errors/
+
       - name: 📊 Generate HTML chart
         run: node generate-chart.js
 
