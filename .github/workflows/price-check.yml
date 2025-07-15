@@ -1,0 +1,38 @@
+name: Price Tracker Automation
+
+on:
+  schedule:
+    - cron: "*/30 * * * *" # every hour at minute 0 (UTC)
+  workflow_dispatch: # allows manual run
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: 🔧 Install dependencies
+        run: npm install
+
+      - name: 🕵️ Run price tracker
+        run: node tracker.js
+
+      - name: 📊 Generate HTML chart
+        run: node generate-chart.js
+
+      - name: 🔄 Commit updated data/chart
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add price-history.json price-chart.html
+          git commit -m "🤖 Update price history and chart [skip ci]" || echo "No changes to commit"
+          git push
+        env:
+          GH_TOKEN: ${{ secrets.PRICE_TRACKER_SECRET }}
