@@ -14,7 +14,7 @@ const {
 
 // === CONFIGURATION ===
 const WATCHLIST_PATH = './watchlist.json';
-const HISTORY_PATH = './price-history.json';
+const HISTORY_PATH = './charts/price-history.json';
 const MAX_CONCURRENT_TABS = 5;
 const DELAY_AFTER_LOAD_MS = 5000;
 
@@ -32,23 +32,29 @@ function parsePrice(text) {
 }
 
 function compareAndLogPrice(item, price) {
-    const prevPrice = history[item.name];
-    history[item.name] = price;
+    const timestamp = new Date().toISOString();
+
+    if (!history[item.name]) history[item.name] = [];
+    history[item.name].push({ timestamp, price });
+    const prevEntry = history[item.name].length > 1
+        ? history[item.name][history[item.name].length - 2]
+        : null;
+    const prevPrice = prevEntry?.price;
 
     if (price < item.maxPrice && (prevPrice === undefined || price < prevPrice)) {
         const msg = `${item.name} price dropped to $${price} (was previously ${prevPrice ?? 'unknown'})`;
-        notifyDesktop('Price Drop Alert!', msg);
-        notifyEmail(`'Price Drop Alert! - ${item.name}`, msg);
+        notifyDesktop(`Price Drop Alert! - ${item.name}`, msg);
+        notifyEmail(`Price Drop Alert! - ${item.name}`, msg);
         logSuccess(`${msg} (Notified)`);
         return true;
     }
 
     if (prevPrice === undefined) {
-        logPrice(item.name, price, '(First time seen)');
+        logPrice(item.name, price, "(First time seen)");
     } else if (price > prevPrice) {
         logPrice(item.name, price, `(Increased from $${prevPrice})`);
     } else if (price === prevPrice) {
-        logPrice(item.name, price, `(No change)`);
+        logPrice(item.name, price, "(No change)");
     } else {
         logPrice(item.name, price, `(Dropped, but not below threshold $${item.maxPrice})`);
     }
