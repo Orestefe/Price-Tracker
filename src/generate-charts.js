@@ -3,6 +3,12 @@ const path = require('path');
 
 const OUTPUT_PATH = path.resolve(__dirname, '../output/price-chart.html');
 const HISTORY_PATH = path.resolve(__dirname, '../data/price-history.json');
+
+const outputDir = path.dirname(OUTPUT_PATH);
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir, { recursive: true });
+}
+
 const raw = fs.readFileSync(HISTORY_PATH, 'utf-8');
 const history = JSON.parse(raw);
 const datasets = [];
