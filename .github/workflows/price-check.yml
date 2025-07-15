@@ -37,10 +37,10 @@ jobs:
       - name: 📊 Generate HTML chart
         run: node src/generate-charts.js
 
-      - name: 🔄 Commit updated data/chart
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/price-history.json docs/price-chart.html
-          git commit -m "🤖 Update price history and chart [skip ci]" || echo "No changes to commit"
-          git push
+      - name: 🚀 Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          publish_branch: gh-pages
+          force_orphan: true
