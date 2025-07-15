@@ -41,6 +41,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add price-history.json docs/price-chart.html
+          git add data/price-history.json docs/price-chart.html
           git commit -m "🤖 Update price history and chart [skip ci]" || echo "No changes to commit"
           git push
