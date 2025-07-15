@@ -2,12 +2,15 @@ name: Price Tracker Automation
 
 on:
   schedule:
-    - cron: "*/30 * * * *" # every hour at minute 0 (UTC)
+    - cron: "*/30 * * * *" # every 30 minutes at minute 0
   workflow_dispatch: # allows manual run
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
+      EMAIL_SECRET: ${{ secrets.EMAIL_SECRET }}
 
     steps:
       - name: 📥 Checkout code
@@ -34,5 +37,3 @@ jobs:
           git add price-history.json price-chart.html
           git commit -m "🤖 Update price history and chart [skip ci]" || echo "No changes to commit"
           git push
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
