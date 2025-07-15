@@ -83,10 +83,13 @@ async function checkPrice(item, browser) {
 
 // === MAIN ===
 (async () => {
-    const allSelectorsPresent = watchlist.every(item => !!item.priceSelector && !!item.priceSelector != "");
+    const isCI = process.env.CI === 'true';
+    const allSelectorsPresent = watchlist.every(item => !!item.priceSelector && item.priceSelector !== "");
+
     const browser = await puppeteer.launch({
-        headless: allSelectorsPresent,
-        defaultViewport: null
+        headless: allSelectorsPresent ? 'new' : false,
+        defaultViewport: null,
+        args: isCI ? ['--no-sandbox', '--disable-setuid-sandbox'] : []
     });
 
     await ensureSelectors(browser, watchlist);
