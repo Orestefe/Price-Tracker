@@ -35,4 +35,4 @@ jobs:
           git commit -m "🤖 Update price history and chart [skip ci]" || echo "No changes to commit"
           git push
         env:
-          GH_TOKEN: ${{ secrets.PRICE_TRACKER_SECRET }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
