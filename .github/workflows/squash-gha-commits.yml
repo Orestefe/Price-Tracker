@@ -23,7 +23,7 @@ jobs:
       - name: 🧠 Get commits with [skip ci]
         id: find_commits
         run: |
-          COMMITS=$(git log --pretty=format:"%H" --grep="\[skip ci\]" origin/main)
+          COMMITS=$(git log --pretty=format:"%H" --grep="\[skip ci\]" origin/master)
           echo "$COMMITS"
           echo "commits<<EOF" >> $GITHUB_OUTPUT
           echo "$COMMITS" >> $GITHUB_OUTPUT
@@ -38,9 +38,9 @@ jobs:
         run: |
           COMMITS="${{ steps.find_commits.outputs.commits }}"
           FIRST_COMMIT=$(echo "$COMMITS" | tail -n 1)
-          git checkout main
-          git pull origin main
+          git checkout master
+          git pull origin master
 
           git reset --soft "$FIRST_COMMIT^"
           git commit -m "🧹 Squashed [skip ci] commits [bot-squash] [skip ci]"
-          git push origin main --force
+          git push origin master --force
