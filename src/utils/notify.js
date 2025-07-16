@@ -8,8 +8,8 @@ if (process.env.EMAIL_ADDRESS && process.env.EMAIL_SECRET) {
     password = process.env.EMAIL_SECRET;
 } else {
     const secrets = require('../../data/secrets.json');
-    email = secrets.email;
-    password = secrets.appPassword;
+    email = secrets.gmail.user;
+    password = secrets.gmail.pass;
 }
 
 function notifyDesktop(title, message) {
