@@ -5,6 +5,9 @@ on:
     - cron: "0 */4 * * *" # Every 4 hours
   workflow_dispatch:
 
+permissions:
+  contents: write # Required to push changes back to the repo
+
 jobs:
   squash:
     runs-on: ubuntu-latest
@@ -14,6 +17,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0 # Full history needed to squash
+          ref: master
 
       - name: 🔧 Setup Git identity
         run: |
