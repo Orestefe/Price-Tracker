@@ -1327,6 +1327,10 @@
     {
       "timestamp": "2025-07-26T16:26:27.521Z",
       "price": 25.08
+    },
+    {
+      "timestamp": "2025-07-26T18:30:29.413Z",
+      "price": 25.08
     }
   ],
   "The Urban Jungle Rooftop Hostel - Superior 6 Bed Mixed Dorm Ensuite": [
@@ -2637,6 +2641,10 @@
     {
       "timestamp": "2025-07-26T16:26:27.800Z",
       "price": 56.88
+    },
+    {
+      "timestamp": "2025-07-26T18:30:29.011Z",
+      "price": 56.88
     }
   ],
   "El Misti - 4 Bed Dorm": [
@@ -3938,6 +3946,10 @@
     },
     {
       "timestamp": "2025-07-26T16:26:27.811Z",
+      "price": 256.74
+    },
+    {
+      "timestamp": "2025-07-26T18:30:29.192Z",
       "price": 256.74
     }
   ],
@@ -5252,6 +5264,10 @@
     },
     {
       "timestamp": "2025-07-26T16:26:27.874Z",
+      "price": 24.65
+    },
+    {
+      "timestamp": "2025-07-26T18:30:29.527Z",
       "price": 24.65
     }
   ]
